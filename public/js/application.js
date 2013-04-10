@@ -1,32 +1,48 @@
-function advance_player (player) {
-var tr = $("#player"+player+"_strip");
-var tds = tr.children().length
-var td = $("#player"+player+"_strip").find('.active');
-if (td.index() + 1 == tds){
-td.toggleClass('winner')
-}
-else{
-td.toggleClass('active');
-td.next().toggleClass('active');
-}
-}
- 
 $(document).ready(function() {
-$(document).on('keyup',function (event) {
-if(event.which == 81) {
-advance_player(1)
-}
-else {
-advance_player(2)
-}
-});
-});
+    var player1_counter = 1;
+    var player2_counter = 1;
+    var track_length = 40;
 
-$.ajax({
-     url: '/game/'+game_id,
-        type: 'PUT',
-        data: "winner_id="+player1_id+"&time_played="+time_played,
-        success: function(data) {
-          
-        }
-      });
+    function get_winner(data) {
+      $.ajax ({
+        type: 'POST',
+        data: { sql: data },
+        url: '/results'
+      })
+    }
+
+  $(document).on('keyup', function(event) {
+
+    var code = event.keyCode;
+
+    function update_player_position(player) {
+      var active = $("#" + player + "_strip td.active");
+      active.removeClass('active').next().addClass('active');
+    }
+
+    if(code == 81) {
+      update_player_position('player1');
+      player1_counter += 1;
+      if ($('#player1_strip td.active').hasClass('winner')) {
+        $(document).off('keyup');
+        $('.p1_winner').css('display', 'inline');
+        var winner = $('.p1_winner').text();
+        get_winner(winner);
+        $('.results_button').css('display', 'block');
+      }
+    }
+
+    if(code == 80) {
+      update_player_position('player2');
+      player2_counter += 1;
+      if ($('#player2_strip td.active').hasClass('winner')) {
+        $(document).off('keyup');
+        $('.p2_winner').css('display', 'inline');
+        var winner = $('.p2_winner').text();
+        get_winner(winner);
+        $('.results_button').css('display', 'block');
+      }
+    }
+
+  });
+});

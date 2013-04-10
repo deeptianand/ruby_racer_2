@@ -20,6 +20,7 @@ get '/game/:game_id' do
 end
 
 put '/game/:game_id' do
-
-
+game = Game.find(params[:game_id])
+game.winner = Player.find(params[:winner_id])
+game.save
 end
