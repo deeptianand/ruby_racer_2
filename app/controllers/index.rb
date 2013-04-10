@@ -19,7 +19,7 @@ get '/game/:game_id' do
  erb :game
 end
 
-put '/game/:game_id' do
+put '/results' do
 game = Game.find(params[:game_id])
 game.winner = Player.find(params[:winner_id])
 game.save
